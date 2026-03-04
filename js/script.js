@@ -1,13 +1,24 @@
+const intro = document.getElementById("intro");
+const enterText = document.getElementById("enter-text");
+const mainContent = document.getElementById("main-content");
+const closeBtn = document.getElementById("close-btn");
+
 const container = document.getElementById('container');
 const text = document.getElementById('text');
-let speed = 0.8; // vitesse pixels/frame
-let isPaused = false;
 
-// ---------- Gestion du toucher ----------
+let speed = 0.8;
+let isPaused = false;
+let animationRunning = false;
+
+let y = 0;
+let yClone = 0;
+let clone = null;
+
+// ---------- Gestion du toucher (pause) ----------
 document.addEventListener('touchstart', () => { isPaused = true; });
 document.addEventListener('touchend', () => { isPaused = false; });
 
-// ---------- Textes FR et EN ----------
+// ---------- Textes FR / EN ----------
 const texts = {
   en: [
     "Above the lakes, above the valleys,",
@@ -55,38 +66,27 @@ const texts = {
   ]
 };
 
-// ---------- Variables pour animation ----------
-let y = 0;
-let yClone = 0;
-let clone = null;
-
-// ---------- Fonction pour mettre à jour le texte ----------
+// ---------- Mise à jour du texte ----------
 function updateText(lang) {
-  // Supprime tout contenu existant
   text.innerHTML = "";
-  
-  // Ajoute chaque ligne
+
   texts[lang].forEach(line => {
     const p = document.createElement("p");
     p.textContent = line;
     text.appendChild(p);
   });
 
-  // Supprime le clone précédent
   if (clone) clone.remove();
 
-  // Crée un clone pour boucle infinie
   clone = text.cloneNode(true);
-  clone.classList.add("clone");
   container.appendChild(clone);
 
-  // Position initiale
   y = 0;
   yClone = text.offsetHeight;
   clone.style.top = yClone + "px";
 }
 
-// ---------- Boutons ----------
+// ---------- Boutons langue ----------
 document.getElementById("btn-en").addEventListener("click", () => {
   updateText("en");
   document.getElementById("btn-en").classList.add("active");
@@ -99,8 +99,10 @@ document.getElementById("btn-fr").addEventListener("click", () => {
   document.getElementById("btn-en").classList.remove("active");
 });
 
-// ---------- Boucle d'animation ----------
+// ---------- Animation ----------
 function animate() {
+  if (!animationRunning) return;
+
   if (!isPaused && clone) {
     y -= speed;
     yClone -= speed;
@@ -113,19 +115,59 @@ function animate() {
     text.style.top = y + "px";
     clone.style.top = yClone + "px";
   }
+
   requestAnimationFrame(animate);
 }
 
-// ---------- Gestion du redimensionnement ----------
+// ---------- Resize ----------
 window.addEventListener('resize', () => {
   if (!clone) return;
 
-  // Repositionne le clone et reset positions pour éviter chevauchement
   y = 0;
   yClone = text.offsetHeight;
   clone.style.top = yClone + "px";
 });
 
-// ---------- Initialisation ----------
-updateText("en"); // anglais par défaut
-animate();
+// ---------- ENTER ----------
+enterText.addEventListener("click", () => {
+
+  // Active plein écran
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  }
+
+  intro.style.display = "none";
+  mainContent.style.display = "flex";
+  closeBtn.style.display = "block";
+
+  updateText("en");
+
+  animationRunning = true;
+  animate();
+});
+
+// ---------- CLOSE ----------
+closeBtn.addEventListener("click", () => {
+
+  // Quitte plein écran
+  if (document.fullscreenElement) {
+    document.exitFullscreen();
+  }
+
+  // Stop animation
+  animationRunning = false;
+
+  // Nettoyage
+  if (clone) {
+    clone.remove();
+    clone = null;
+  }
+
+  text.innerHTML = "";
+  y = 0;
+  yClone = 0;
+
+  mainContent.style.display = "none";
+  closeBtn.style.display = "none";
+  intro.style.display = "flex";
+});
