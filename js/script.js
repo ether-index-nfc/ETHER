@@ -1,3 +1,4 @@
+
 const intro = document.getElementById("intro");
 const enterText = document.getElementById("enter-text");
 const mainContent = document.getElementById("main-content");
@@ -15,6 +16,8 @@ let yClone = 0;
 let clone = null;
 
 // ---------- Gestion du toucher (pause) ----------
+// Empêche le menu contextuel et la sélection au long press
+document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('touchstart', () => { isPaused = true; });
 document.addEventListener('touchend', () => { isPaused = false; });
 
@@ -170,4 +173,5 @@ closeBtn.addEventListener("click", () => {
   mainContent.style.display = "none";
   closeBtn.style.display = "none";
   intro.style.display = "flex";
+
 });
