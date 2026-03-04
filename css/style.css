@@ -122,6 +122,15 @@ body {
   line-height: 1;
 }
 
+#container, #text, #text p, #main-content {
+  user-select: none;          /* désactive la sélection du texte */
+  -webkit-user-select: none;  /* Safari / Chrome iOS */
+  -ms-user-select: none;      /* Internet Explorer */
+  -moz-user-select: none;     /* Firefox */
+  -webkit-touch-callout: none; /* désactive le menu contextuel sur iOS */
+}
+
 #close-btn:active {
   opacity: 0.6;
+
 }
