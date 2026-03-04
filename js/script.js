@@ -171,3 +171,4 @@ closeBtn.addEventListener("click", () => {
   closeBtn.style.display = "none";
   intro.style.display = "flex";
 });
+
